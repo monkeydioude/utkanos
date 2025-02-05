@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"log/slog"
 	"math/rand"
 	"net"
 	"os"
@@ -40,7 +39,7 @@ func (c Channels) SendRandom(send func(string)) {
 func sendFactory(conn net.Conn) func(string) {
 	return func(msg string) {
 		fmt.Fprintf(conn, "%s\r\n", msg)
-		slog.Info(msg)
+		fmt.Println(msg)
 	}
 }
 
@@ -55,7 +54,7 @@ func waitMsg(conn net.Conn, sendFn func(string)) {
 	scanner := bufio.NewScanner(conn)
 	for scanner.Scan() {
 		line := scanner.Text()
-		slog.Info(fmt.Sprintf("<< %s", line))
+		fmt.Printf("<< %s\n", line)
 
 		// Respond to PING messages to stay connected
 		if len(line) > 4 && line[:4] == "PING" {
@@ -85,14 +84,14 @@ func main() {
 	for conn == nil {
 		conn, err = net.Dial("tcp", server)
 		if err != nil {
-			slog.Error("Error connecting, retry in 5s", "err", err.Error())
+			fmt.Println("Error connecting, retry in 5s", "err", err.Error())
 			time.Sleep(5 * time.Second)
 		}
 	}
 	defer conn.Close()
 
 	send := sendFactory(conn)
-	slog.Info("Connected to server", "addr", server)
+	fmt.Printf("Connected to server. addr=%s", server)
 	// Authenticate with the server
 	send("PASS " + pass)
 	send("NICK " + nickname)
