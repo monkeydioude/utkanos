@@ -12,11 +12,12 @@ import (
 )
 
 const (
-	server   = "192.168.1.109:2224"
-	nickname = "utkanos"
-	channel  = "#general"
-	pass     = "1234"
+	server  = "192.168.1.109:2224"
+	channel = "#general"
+	pass    = "1234"
 )
+
+var nickname = "utkanos"
 
 type Channels []string
 
@@ -78,6 +79,9 @@ func main() {
 	var conn net.Conn
 	var err error
 
+	if len(os.Args) > 1 {
+		nickname = os.Args[1]
+	}
 	for conn == nil {
 		conn, err = net.Dial("tcp", server)
 		if err != nil {
